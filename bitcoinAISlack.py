@@ -2,13 +2,13 @@ import time
 import pyupbit
 import datetime
 import requests
+import numpy as np
 import schedule
 from fbprophet import Prophet
 
 access = "code"
 secret = "code"
 myToken = "token"
-
 
 def post_message(token, channel, text):
     """슬랙 메시지 전송"""
@@ -44,6 +44,19 @@ def get_current_price(ticker):
     """현재가 조회"""
     return pyupbit.get_orderbook(ticker=ticker)["orderbook_units"][0]["ask_price"]
 
+def get_ror(k=0.5):
+    df = pyupbit.get_ohlcv("KRW-ETH", count=7)
+    df['range'] = (df['high'] - df['low']) * k
+    df['target'] = df['open'] + df['range'].shift(1)
+
+    df['ror'] = np.where(df['high'] > df['target'],
+                         df['close'] / df['target'],
+                         1)
+
+    ror = df['ror'].cumprod()[-2]
+    return ror
+
+mostK = 0
 predicted_close_price = 0
 def predict_price(ticker):
     """Prophet으로 당일 종가 가격 예측"""
@@ -62,8 +75,21 @@ def predict_price(ticker):
         closeDf = forecast[forecast['ds'] == data.iloc[-1]['ds'].replace(hour=9)]
     closeValue = closeDf['yhat'].values[0]
     predicted_close_price = closeValue
-predict_price("KRW-BTC")
-schedule.every().hour.do(lambda: predict_price("KRW-BTC")) #1시간마다 업데이트
+    
+    mostKVal = 0
+    mostK = 0
+    """최고의 K값을 정하는 로직"""
+    for k in np.arange(0.1, 1.0, 0.1):
+        ror = get_ror(k)
+        if(mostKVal < ror) : 
+            mostKVal = ror 
+            mostK = k
+
+    mostK = round(mostK,1)
+    #종료
+
+predict_price("KRW-ETH")
+schedule.every().hour.do(lambda: predict_price("KRW-ETH")) #1시간마다 업데이트
 
 # 로그인
 upbit = pyupbit.Upbit(access, secret)
@@ -75,23 +101,23 @@ post_message(myToken,"#crypto", "autotrade start")
 while True:
     try:
         now = datetime.datetime.now()
-        start_time = get_start_time("KRW-BTC")
+        start_time = get_start_time("KRW-ETH")
         end_time = start_time + datetime.timedelta(days=1)
         schedule.run_pending()
 
-        if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-BTC", 0.5)
-            current_price = get_current_price("KRW-BTC")
+        if start_time < now < end_time - datetime.timedelta(seconds=20):
+            target_price = get_target_price("KRW-ETH", mostK)
+            current_price = get_current_price("KRW-ETH")
             if target_price < current_price and current_price < predicted_close_price:
                 krw = get_balance("KRW")
                 if krw > 5000:
-                    buy_result = upbit.buy_market_order("KRW-BTC", krw*0.9995)
-                    post_message(myToken,"#crypto", "BTC buy : " +str(buy_result))
+                    buy_result = upbit.buy_market_order("KRW-ETH", krw*0.9995)
+                    post_message(myToken,"#crypto", "ETH buy : " +str(buy_result))
         else:
-            btc = get_balance("BTC")
+            btc = get_balance("ETH")
             if btc > 0.00008:
-                sell_result = upbit.sell_market_order("KRW-BTC", btc)
-                post_message(myToken,"#crypto", "BTC sell : " +str(sell_result))
+                sell_result = upbit.sell_market_order("KRW-ETH", btc)
+                post_message(myToken,"#crypto", "ETH sell : " +str(sell_result))
         time.sleep(1)
     except Exception as e:
         print(e)

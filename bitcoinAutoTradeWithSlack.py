@@ -73,7 +73,7 @@ while True:
             btc = get_balance("BTC")
             if btc > 0.00008:   # 수정필요
                 sell_result = upbit.sell_market_order("KRW-BTC", btc)   
-                post_message(myToken,"#crypto", "BTC buy : " +str(sell_result))
+                post_message(myToken,"#crypto", "BTC sell : " +str(sell_result))
         time.sleep(1)
     except Exception as e:
         print(e)
