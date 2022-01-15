@@ -1,7 +1,7 @@
 import pyupbit
 
-access = "code"          # 본인 값으로 변경
-secret = "code"          # 본인 값으로 변경
+access = "R3xbCxI9k7HaMNiImDIrqqtyB8Fs77mpwvv1Tr7N"          # 본인 값으로 변경
+secret = "f98Ob9FBgXRkMQxDEhxQOyzzSnsBgbGyHT2P8mPI"          # 본인 값으로 변경
 upbit = pyupbit.Upbit(access, secret)
 
 print(upbit.get_balance("KRW-BTC"))     # KRW-BTC 조회
