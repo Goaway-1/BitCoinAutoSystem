@@ -33,7 +33,7 @@
 
 > **<h3>기타 참조</h3>**
 ### 사용 환경 : Prophet, visual studio code, 파이썬 3.8.9-64bit, AWS_console, Slack...
-### 참조 강의 : [조코딩 채널](#https://www.youtube.com/c/조코딩JoCoding/videos)
-### 참고 문헌 : [파이썬을 이용한 비트코인 자동매매](#https://wikidocs.net/book/1665) - 저자 : 조대표
-### 추가 설명 : [기존 내용 및 가이드](#https://github.com/Goaway-1/BitCoinAutoSystem/blob/master/Source/Info.md)
-### 추후 참조 : [1번](#https://wellsw.tistory.com/m/143) , 시간을 건드는 get_start_time 수정 예정
+### 참조 강의 : [조코딩 채널](https://www.youtube.com/c/조코딩JoCoding/videos)
+### 참고 문헌 : [파이썬을 이용한 비트코인 자동매매](https://wikidocs.net/book/1665) - 저자 : 조대표
+### 추가 설명 : [기존 내용 및 가이드](https://github.com/Goaway-1/BitCoinAutoSystem/blob/master/Source/Info.md)
+### 추후 참조 : [1번](https://wellsw.tistory.com/m/143) , 시간을 건드는 get_start_time 수정 예정
