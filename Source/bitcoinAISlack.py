@@ -6,12 +6,13 @@ import numpy as np
 import schedule
 from fbprophet import Prophet
 
-access = "code"
-secret = "code"
-myToken = "token"
+access = "key"
+secret = "key"
+myToken = "key"
+
 
 def post_message(token, channel, text):
-    """슬랙 메시지 전송"""
+    # 슬랙 메시지 전송
     response = requests.post("https://slack.com/api/chat.postMessage",
         headers={"Authorization": "Bearer "+token},
         data={"channel": channel,"text": text}
@@ -77,7 +78,7 @@ def predict_price(ticker):
     predicted_close_price = closeValue
     
     mostKVal = 0
-    mostK = 0
+    global mostK
     """최고의 K값을 정하는 로직"""
     for k in np.arange(0.1, 1.0, 0.1):
         ror = get_ror(k)
@@ -94,8 +95,7 @@ schedule.every().hour.do(lambda: predict_price("KRW-ETH")) #1시간마다 업데
 # 로그인
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
-# 시작 메세지 슬랙 전송
-post_message(myToken,"#crypto", "autotrade start")
+post_message(myToken,"#stock", "Autotrade start")
 
 # 자동매매 시작
 while True:
@@ -112,14 +112,14 @@ while True:
                 krw = get_balance("KRW")
                 if krw > 5000:
                     buy_result = upbit.buy_market_order("KRW-ETH", krw*0.9995)
-                    post_message(myToken,"#crypto", "ETH buy : " +str(buy_result))
+                    post_message(myToken,"#stock", "ETH buy : " +str(buy_result))
         else:
-            btc = get_balance("ETH")
+            btc = get_balance("BTC")
             if btc > 0.00008:
                 sell_result = upbit.sell_market_order("KRW-ETH", btc)
-                post_message(myToken,"#crypto", "ETH sell : " +str(sell_result))
+                post_message(myToken,"#stock", "ETH sell : " +str(sell_result))
         time.sleep(1)
     except Exception as e:
         print(e)
-        post_message(myToken,"#crypto", e)
+        post_message(myToken,"#stock", e)
         time.sleep(1)

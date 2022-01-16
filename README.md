@@ -1,50 +1,39 @@
-# 파이썬 비트코인 투자 자동화 강의 코드
-## by 유튜브 조코딩 채널
-### pyupbit 라이브러리를 활용하여 upbit 거래소에서 비트코인 자동매매를 하는 코드입니다.
+# 업비트 API를 사용한 비트코인 투자 자동화
 
-### 파일 구성
-- test.py : 잔고 조회 (1강)
-- backtest.py : 백테스팅 코드 (2강)
-- bestK.py : 가장 좋은 k 값을 찾는 코드 (2강)
-- bitcoinAutoTrade.py : 변동성 돌파 전략 비트코인 자동매매 코드 (2강)
-- bitcoinAutoTradeWithAI.py : 변동성 돌파 전략 + 인공지능(Prophet) 비트코인 자동매매 코드 (3강)
-- bitcoinAutoTradeWithMA.py : 변동성 돌파 전략 + 15일 이동평균선 이상 비트코인 자동매매 코드 (2강)
-- bitcoinAutoTradeWithSlack.py : 위 코드에 슬랙 붙여 놓은 것 (2강)
-- 강의 보러가기:  https://youtube.com/playlist?list=PLU9-uwewPMe3KKFMiIm41D5Nzx_fx2PUJ
-- 위 코드는 "파이썬을 이용한 비트코인 자동매매 (개정판)"을 참고하여 제작되었습니다.
-- 참고 문헌: https://wikidocs.net/book/1665
+> **<h3>투자전략</h3>**
+- ## <span style = "color:yellow;">변동성 돌파 전략 (래리 윌리암스)</span>
+  - <img src="Image/Volatility_Breakout.png" height="300" title="Volatility_Breakout"> 
+  - 래리 윌리엄스(Larry R. Williams)가 사용했던 전략 중 하나로 일일 단위로 일정 수준 이상의 범위를 뛰어넘는 강한 상승세를 돌파 신호로 파악하여 상승하는 추세를 따라가며 __일 단위로__ 빠르게 수익을 실현
+  - 또한, 일 단위로 이루어지는 청산 과정은 급작스러운 낙폭에 대한 리스크를 최소화하여 안정적인 우상향을 가능
+  - 변동성 돌파 전략은 변동성이 큰 시장일수록 '단기적 추세'가 뚜렷이 나타나 빼어난 성과를 기록
+  - 어제 기준 가장 낮은 저가와 가장 높은 고가의 변동폭을 기준으로 오늘 시작 가격의 그 변동폭의 K배 만큼 상승시 돌파 신호로 판단하고 매수하고 하루가 끝나면 매도
 
-### Ubuntu 서버 명령어
-- (*추가)한국 기준으로 서버 시간 설정: sudo ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-- 현재 경로 상세 출력: ls -al
-- 경로 이동: cd 경로
-- vim 에디터로 파일 열기: vim bitcoinAutoTrade.py
-- vim 에디터 입력: i
-- vim 에디터 저장: :wq!
-- 패키지 목록 업데이트: sudo apt update
-- pip3 설치: sudo apt install python3-pip
-- pip3로 pyupbit 설치: pip3 install pyupbit
-- 백그라운드 실행: nohup python3 bitcoinAutoTrade.py > output.log &
-- 실행되고 있는지 확인: ps ax | grep .py
-- 프로세스 종료(PID는 ps ax | grep .py를 했을때 확인 가능): kill -9 PID
+- ## <span style = "color:yellow;">Prophet (시계열 예측)</span>
+  - 페이스북에서 만든 시계열 분석/예측 라이브러리로 시간에 따른 데이터를 의미
+  - 이 알고리즘을 통해 매수를 진행하는 시점에서 미래 가격 예측을 하고 당일 종가에 실제로 매수가보다 높을지를 예측해서 매수가가 높은 경우에만 매수
 
-![PID설명](https://user-images.githubusercontent.com/58558338/115999411-9133ef00-a626-11eb-8aa0-82a1114936e8.PNG)
+- ## <span style = "color:yellow;">나의 전략</span>
+  - 매시간 원하는 종목의 일주일간 데이터를 기반으로 백테스팅을 진행하여 가장 좋은 k값을 조절하고 AI(Prophet)를 통해 당일 종가 가격 예측
+  - 시작시간(09:00)부터 종료시간전까지 __매수 목표값보다 현재 가격이 높고 현재 가격보다 당일 종가 가격이 높다면__ 매수
+  - 종료시간이 되면 모든 코인을 매도
+  - __수정필요__ : 시작시간과 종료시간을 측정하여 최적의 시간을 예측 코드 하나 작성
 
+> **<h3>파일 구성</h3>**
 
-### Windows 인공지능 (Prophet) 자동매매 환경 설치 방법
-- 아나콘다(https://www.anaconda.com/) 설치
-- pip install pyupbit
-- pip install schedule
-- conda install -c conda-forge fbprophet
-- pip install pystan --upgrade
+|파일명|내용|
+|:--:|:--:|
+|test.py|잔고 조회 코드|
+|backtest.py|백테스팅 코드|
+|bestK.py|가장 좋은 k 값을 찾는 코드|
+|bitcoinAutoTrade.py|변동성 돌파 전략 비트코인 자동매매 코드|
+|bitcoinAutoTradeWithAI.py|변동성 돌파 전략 + 인공지능(Prophet) 비트코인 자동매매 코드|
+|bitcoinAutoTradeWithMA.py|변동성 돌파 전략 + 15일 이동평균선 이상 비트코인 자동매매 코드|
+|bitcoinAutoTradeWithSlack.py|위 코드에 슬랙 붙여 놓은 것|
+|<span style = "color:yellow;">__bitcoinAISlack.py__</span>|AI와 Slack을 조합한 코드 (사용중)|
 
-### Ubuntu 20.4 인공지능 (Prophet) 자동매매 환경 설치 방법
-- 4GB이상 RAM 필요 (AWS t2.medium 이상)
-- sudo apt update
-- sudo ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-- sudo apt install python3-pip
-- pip3 install pyupbit
-- pip3 install schedule
-- pip3 install pystan==2.19.1.1
-- pip3 install convertdate
-- pip3 install fbprophet
+> **<h3>기타 참조</h3>**
+### 사용 환경 : Prophet, visual studio code, 파이썬 3.8.9-64bit, AWS_console, Slack...
+### 참조 강의 : [조코딩 채널](#https://www.youtube.com/c/조코딩JoCoding/videos)
+### 참고 문헌 : [파이썬을 이용한 비트코인 자동매매](#https://wikidocs.net/book/1665) - 저자 : 조대표
+### 추가 설명 : [기존 내용 및 가이드](#https://github.com/Goaway-1/BitCoinAutoSystem/blob/master/Source/Info.md)
+### 추후 참조 : [1번](#https://wellsw.tistory.com/m/143) , 시간을 건드는 get_start_time 수정 예정
